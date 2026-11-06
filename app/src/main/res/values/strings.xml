@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PermHub</string>
+    <string name="back">Back</string>
+    <string name="info">About PermHub</string>
+    <string name="close">Close</string>
+
+    <plurals name="review_count">
+        <item quantity="one">app worth reviewing</item>
+        <item quantity="other">apps worth reviewing</item>
+    </plurals>
+    <string name="hero_scanned">%1$d apps checked on this profile</string>
+    <string name="hero_loading">Checking your apps…</string>
+    <string name="tab_review">Review</string>
+    <string name="tab_access">Access</string>
+    <string name="tab_apps">Apps</string>
+    <string name="search_hint">Search</string>
+    <string name="show_system">Show system apps</string>
+    <string name="empty_review">Nothing to review. No app matches a high-risk rule.</string>
+    <string name="empty_apps">No apps found.</string>
+    <string name="empty_search">No results.</string>
+    <string name="empty_access">No app has this access right now.</string>
+    <string name="load_failed">Could not read your apps.</string>
+    <string name="open_failed">Android could not open this settings page.</string>
+
+    <string name="section_permissions">Permissions</string>
+    <string name="section_special">Special access</string>
+    <string name="section_findings">Why it is flagged</string>
+    <string name="access_count">%1$d allowed</string>
+    <string name="access_detail_count">%1$d allowed · %2$d requested</string>
+    <string name="state_allowed">Allowed</string>
+    <string name="state_not_allowed">Not allowed</string>
+    <string name="app_system">System app</string>
+    <string name="no_permissions">This app requests no tracked permission.</string>
+    <string name="no_findings">No rule matched this app.</string>
+    <string name="open_settings">Manage in Android settings</string>
+    <string name="open_access_settings">Open Android settings</string>
+    <string name="open_appwall">Block Internet with AppWall</string>
+    <string name="section_allowed">Allowed</string>
+    <string name="section_requested">Requested, not allowed</string>
+
+    <string name="severity_high">Review</string>
+    <string name="severity_medium">Sensitive</string>
+    <string name="severity_low">Low</string>
+
+    <string name="permission_microphone">Microphone</string>
+    <string name="permission_camera">Camera</string>
+    <string name="permission_location">Location</string>
+    <string name="permission_background_location">Background location</string>
+    <string name="permission_contacts">Contacts</string>
+    <string name="permission_phone">Phone</string>
+    <string name="permission_call_log">Call log</string>
+    <string name="permission_sms">SMS</string>
+    <string name="permission_calendar">Calendar</string>
+    <string name="permission_media">Photos, videos and files</string>
+    <string name="permission_sensors">Body sensors and activity</string>
+    <string name="permission_nearby">Nearby devices</string>
+    <string name="permission_notifications">Notifications</string>
+
+    <string name="special_accessibility">Accessibility service</string>
+    <string name="special_notification_listener">Notification access</string>
+    <string name="special_device_admin">Device admin</string>
+    <string name="special_overlay">Display over other apps</string>
+    <string name="special_usage">Usage access</string>
+    <string name="special_all_files">All files access</string>
+    <string name="special_install">Install unknown apps</string>
+
+    <string name="reason_accessibility">Can read your screen and act on your behalf.</string>
+    <string name="reason_notification_listener">Can read all your notifications, including messages.</string>
+    <string name="reason_device_admin">Has device admin rights, which can make it harder to remove.</string>
+    <string name="reason_sms">Can read or send SMS, including login codes.</string>
+    <string name="reason_call_log">Can read your call history.</string>
+    <string name="reason_background_location">Can read your location when you are not using it.</string>
+    <string name="reason_microphone">Can record audio.</string>
+    <string name="reason_camera">Can use the camera.</string>
+    <string name="reason_contacts">Can read your contacts.</string>
+    <string name="reason_location">Can read your location while in use.</string>
+    <string name="reason_phone">Can read phone state or make calls.</string>
+    <string name="reason_calendar">Can read your calendar.</string>
+    <string name="reason_overlay">Can draw over other apps, which can be used to fake screens.</string>
+    <string name="reason_usage">Can see which apps you use.</string>
+    <string name="reason_all_files">Can read and change all shared files.</string>
+    <string name="reason_install">Can ask to install other apps.</string>
+    <string name="reason_media">Can read shared photos, videos or files.</string>
+    <string name="reason_sensors">Can read body sensors or physical activity.</string>
+    <string name="reason_nearby">Can find and connect to nearby devices.</string>
+    <string name="reason_notifications">Can send notifications.</string>
+    <string name="reason_unusual_utility">Unusual for a simple utility: it has sensitive personal access.</string>
+    <string name="reason_unusual_game">Unusual for a game: it has access to personal messages or contacts.</string>
+
+    <string name="info_message">PermHub shows what your apps are allowed to do, in one place. It has no Internet permission and no ads or analytics, so it cannot send your app list anywhere.\n\nAndroid does not let one app change the permissions of another. PermHub opens the right Android settings page, and you make the change there.\n\nFlags come from simple rules. A flag means an app is worth a look, not that it is malicious.\n\nPermHub only sees the current profile. A work profile needs its own copy.</string>
+</resources>
