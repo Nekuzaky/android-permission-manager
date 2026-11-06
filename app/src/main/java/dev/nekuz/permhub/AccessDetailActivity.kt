@@ -16,6 +16,7 @@ class AccessDetailActivity : Activity() {
     private lateinit var empty: TextView
     private lateinit var progress: ProgressBar
     private lateinit var subtitle: TextView
+    private lateinit var notice: TextView
     private lateinit var adapter: RowAdapter
     private var category: PermissionCategory? = null
     private var special: SpecialAccess? = null
@@ -41,6 +42,7 @@ class AccessDetailActivity : Activity() {
         empty = findViewById(R.id.empty)
         progress = findViewById(R.id.progress)
         subtitle = findViewById(R.id.subtitle)
+        notice = findViewById(R.id.notice)
         adapter = RowAdapter(this)
         list.adapter = adapter
         list.setOnItemClickListener { _, _, position, _ ->
@@ -63,7 +65,7 @@ class AccessDetailActivity : Activity() {
         } else {
             primary.visibility = View.GONE
         }
-        show(Inventory.apps)
+        show(Inventory.result)
     }
 
     override fun onResume() {
@@ -77,21 +79,31 @@ class AccessDetailActivity : Activity() {
             runOnUiThread {
                 if (isDestroyed || current != generation) return@runOnUiThread
                 progress.visibility = View.GONE
-                result.onSuccess(::show).onFailure {
+                result.onSuccess {
+                    Hub.bindNotice(notice, false, it.unknownAccess)
+                    show(it)
+                }.onFailure {
                     if (adapter.rows.isEmpty()) {
                         empty.visibility = View.VISIBLE
                         empty.setText(R.string.load_failed)
+                    } else {
+                        Hub.bindNotice(notice, true, Inventory.result.unknownAccess)
                     }
                 }
             }
         }
     }
 
-    private fun show(apps: List<AppFacts>) {
-        val visible = apps.filter { showSystem || !it.isSystem }
+    private fun show(scan: ScanResult) {
+        val visible = scan.apps.filter { showSystem || !it.isSystem }
         val allowed = visible.filter(::isAllowed)
         val requested = visible.filter { !isAllowed(it) && isRequested(it) }
-        subtitle.text = getString(R.string.access_detail_count, allowed.size, requested.size)
+        val unknown = special?.let { it in scan.unknownAccess || visible.any { app -> it in app.unknownSpecial } } ?: false
+        subtitle.text = if (unknown) {
+            getString(R.string.state_unknown)
+        } else {
+            getString(R.string.access_detail_count, allowed.size, requested.size)
+        }
         adapter.rows = buildList {
             if (allowed.isNotEmpty()) {
                 add(Row.Header(getString(R.string.section_allowed)))
@@ -103,7 +115,7 @@ class AccessDetailActivity : Activity() {
             }
         }
         empty.visibility = if (adapter.rows.isEmpty()) View.VISIBLE else View.GONE
-        empty.setText(R.string.empty_access)
+        empty.setText(if (unknown) R.string.state_unknown else R.string.empty_access)
     }
 
     private fun appRow(app: AppFacts) = Row.AppRow(app, app.packageName, Risk.level(app))

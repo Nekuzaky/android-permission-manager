@@ -26,7 +26,7 @@ enum class PermissionCategory(val title: Int, val permissions: Set<String>, val 
             "android.permission.READ_PHONE_NUMBERS",
             "android.permission.CALL_PHONE",
             "android.permission.ANSWER_PHONE_CALLS",
-            "android.permission.ADD_VOICEMAIL",
+            "com.android.voicemail.permission.ADD_VOICEMAIL",
             "android.permission.USE_SIP",
         ),
     ),
@@ -72,6 +72,7 @@ enum class PermissionCategory(val title: Int, val permissions: Set<String>, val 
             "android.permission.ACTIVITY_RECOGNITION",
         ),
     ),
+    HEALTH(R.string.permission_health, emptySet()),
     NEARBY(
         R.string.permission_nearby,
         setOf(
@@ -86,11 +87,14 @@ enum class PermissionCategory(val title: Int, val permissions: Set<String>, val 
     NOTIFICATIONS(R.string.permission_notifications, setOf("android.permission.POST_NOTIFICATIONS"), 33);
 
     companion object {
+        private const val HEALTH_PREFIX = "android.permission.health."
+
         private val byPermission = entries.flatMap { category ->
             category.permissions.map { it to category }
         }.toMap()
 
-        fun of(permission: String): PermissionCategory? = byPermission[permission]
+        fun of(permission: String): PermissionCategory? =
+            byPermission[permission] ?: HEALTH.takeIf { permission.startsWith(HEALTH_PREFIX) }
 
         fun availableOn(sdk: Int): List<PermissionCategory> = entries.filter { sdk >= it.minSdk }
     }
@@ -100,6 +104,7 @@ enum class SpecialAccess(val title: Int, val permission: String?, val appOp: Str
     ACCESSIBILITY(R.string.special_accessibility, null, null),
     NOTIFICATION_LISTENER(R.string.special_notification_listener, null, null),
     DEVICE_ADMIN(R.string.special_device_admin, null, null),
+    VPN(R.string.special_vpn, null, "android:activate_vpn"),
     OVERLAY(
         R.string.special_overlay,
         "android.permission.SYSTEM_ALERT_WINDOW",
@@ -115,5 +120,10 @@ enum class SpecialAccess(val title: Int, val permission: String?, val appOp: Str
         R.string.special_install,
         "android.permission.REQUEST_INSTALL_PACKAGES",
         "android:request_install_packages",
+    ),
+    WRITE_SETTINGS(
+        R.string.special_write_settings,
+        "android.permission.WRITE_SETTINGS",
+        "android:write_settings",
     ),
 }

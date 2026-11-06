@@ -34,16 +34,19 @@ PermHub has no Internet permission, so your list of apps stays on your phone.
 - **Access:** every permission and special access, with the number of apps allowed
 - **Apps:** every app sorted by risk, with search and an option to include system apps
 - **App details:** all findings, permissions and special access for one app
-- **Direct links:** open the right Android settings page in one tap
-- **AppWall link:** open [AppWall](https://github.com/Nekuzaky/android-app-firewall) to cut Internet access, when it is installed
+- **Direct links:** open the right Android settings page in one tap, resolved to a system app so another app cannot answer in its place
+- **AppWall link:** open [AppWall](https://github.com/Nekuzaky/android-app-firewall) to cut Internet access, shown only when the installed copy carries the AppWall release certificate
+- **Clear about what it could not read:** an app it cannot read is flagged instead of dropped, access it cannot check says "Could not check", and a failed refresh says the results may be outdated
 - No ads, no analytics, no account and no third-party libraries
 
 ## What it checks
 
 | Type | Items |
 | --- | --- |
-| Permissions | Microphone, camera, location, background location, contacts, phone, call log, SMS, calendar, photos and files, body sensors, nearby devices, notifications |
-| Special access | Accessibility services, notification access, device admin, display over other apps, usage access, all files access, install unknown apps |
+| Permissions | Microphone, camera, location, background location, contacts, phone, call log, SMS, calendar, photos and files, body sensors, health data, nearby devices, notifications |
+| Special access | Accessibility services, notification access, device admin, VPN, display over other apps, usage access, all files access, install unknown apps, modify system settings |
+
+Apps that share a user ID share their access, so PermHub shows the combined access on each of them and names the others.
 
 Nearby devices appear on Android 12 and later, and notifications on Android 13 and later, because these permissions do not exist before those versions.
 
@@ -53,11 +56,13 @@ Rules are simple and run on the device. There is no AI, no server and no databas
 
 | Level | Examples |
 | --- | --- |
-| **Review** | Accessibility service, notification access, device admin, SMS, call log, background location, a simple utility or a game with unusual personal access |
-| **Sensitive** | Microphone, camera, contacts, location, phone, calendar, display over other apps, usage access, all files access, install unknown apps |
+| **Review** | Accessibility service, notification access, device admin, approved VPN, SMS, call log, background location, a simple utility or a game with unusual personal access, three or more **Sensitive** items at once, display over other apps or all files access together with microphone, camera or contacts, an app PermHub could not fully read |
+| **Sensitive** | Microphone, camera, contacts, location, phone, calendar, health data, display over other apps, usage access, all files access, install unknown apps, modify system settings |
 | **Low** | Photos and files, body sensors, nearby devices, notifications |
 
-A flag means an app is worth a look. It does not mean the app is malicious, and many legitimate apps need these permissions. System apps are never above **Sensitive**, and only your own apps count toward the review total.
+A flag means an app is worth a look. It does not mean the app is malicious, and many legitimate apps need these permissions, so messaging or camera apps and VPN apps such as AppWall can appear under **Review**. No flag does not mean an app is safe. System apps are never above **Sensitive**, and only your own apps count toward the review total.
+
+An app controls its own name and category, so the utility and game rules are easy to avoid. The other rules do not depend on them.
 
 ## Why PermHub cannot change permissions itself
 
@@ -138,13 +143,15 @@ JAVA_HOME=/path/to/jdk-21 ./gradlew testDebugUnitTest
 - **One profile at a time.** PermHub only sees the current profile, so a work profile needs its own copy.
 - **Rules are not a malware scan.** They only look at permissions, access and the app name or category.
 - **No usage history.** PermHub shows what an app is allowed to do, not when it last used it.
-- **Other permissions are not listed.** PermHub tracks the permissions in the table above, not every permission Android defines.
+- **Other permissions are not listed.** PermHub tracks the permissions in the table above, not every permission Android defines. It does not check the notification assistant or default app roles.
+- **VPN status is approval, not activity.** PermHub shows which apps you approved as a VPN, not which one is connected now.
+- **App names can imitate others.** PermHub removes hidden characters and shows the full package name, but a name and icon can still copy another app. Check the package name.
 - **Not suited to the Play Store.** `QUERY_ALL_PACKAGES` is restricted, so the app is meant to be installed directly.
 - **Device admin link.** Android has no public link to the device admin list, so PermHub opens the security settings.
 
 ## Test status
 
-Tested on one device: Oppo Reno4 Z 5G (CPH2065) with Android 12 and ColorOS.
+Version 1.0.0 was tested on one device: Oppo Reno4 Z 5G (CPH2065) with Android 12 and ColorOS. Version 1.0.1 passed its unit tests and 3,000 random input events on the same device with test apps that use a 6000x6000 icon and a long label containing a bidi character, with no crash or ANR. The other rows marked "Works" describe 1.0.0.
 
 | Scenario | Status |
 | --- | --- |
@@ -157,7 +164,12 @@ Tested on one device: Oppo Reno4 Z 5G (CPH2065) with Android 12 and ColorOS.
 | Landscape mode | Works |
 | Direct launch of internal screens from ADB | Refused |
 | 14,000 random interactions with the Android monkey tool, including rotations | No crash |
-| Risk rules | Works, unit tests |
+| Risk rules, including combinations | Works, unit tests |
+| Label cleaning and component list parsing | Works, unit tests |
+| VPN, modify system settings and health data detection on a phone | Not tested |
+| Settings links resolved to a system app on a phone | Not tested |
+| AppWall button shown only for the signed release on a phone | Not tested |
+| Hostile app with a huge icon or label on a phone | Not tested |
 | Accessibility and device admin counts when an app has them | Not tested, none active on the test device |
 | Notifications category on Android 13 and later | Not tested |
 | Other phones and Android versions | Not tested |

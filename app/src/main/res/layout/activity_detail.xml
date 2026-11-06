@@ -50,12 +50,21 @@
                 android:id="@+id/subtitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ellipsize="middle"
-                android:maxLines="1"
                 android:textColor="@color/text_secondary"
                 android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/notice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/bg_card"
+        android:padding="12dp"
+        android:textColor="@color/amber"
+        android:textSize="13sp"
+        android:visibility="gone" />
 
     <FrameLayout
         android:layout_width="match_parent"

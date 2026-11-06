@@ -17,9 +17,26 @@ data class AppFacts(
     val requested: Set<PermissionCategory>,
     val special: Set<SpecialAccess>,
     val requestedSpecial: Set<SpecialAccess>,
-)
+    val unknownSpecial: Set<SpecialAccess> = emptySet(),
+    val unreadable: Boolean = false,
+    val sharedWith: List<String> = emptyList(),
+) {
+    fun mergedWith(siblings: List<AppFacts>): AppFacts = copy(
+        allowed = allowed + siblings.flatMap { it.allowed },
+        requested = requested + siblings.flatMap { it.requested },
+        special = special + siblings.flatMap { it.special },
+        requestedSpecial = requestedSpecial + siblings.flatMap { it.requestedSpecial },
+        unknownSpecial = unknownSpecial + siblings.flatMap { it.unknownSpecial },
+        unreadable = unreadable || siblings.any { it.unreadable },
+        sharedWith = siblings.map { it.packageName }.sorted(),
+    )
+}
+
+data class ScanResult(val apps: List<AppFacts>, val unknownAccess: Set<SpecialAccess>)
 
 object Risk {
+    const val COMBINATION_THRESHOLD = 3
+
     private val UTILITY_KEYWORDS = listOf(
         "flashlight",
         "torch",
@@ -51,6 +68,14 @@ object Risk {
         PermissionCategory.CALL_LOG,
     )
 
+    private val BROAD_ACCESS = setOf(SpecialAccess.OVERLAY, SpecialAccess.ALL_FILES)
+
+    private val PERSONAL_ACCESS = setOf(
+        PermissionCategory.MICROPHONE,
+        PermissionCategory.CAMERA,
+        PermissionCategory.CONTACTS,
+    )
+
     private val PERMISSION_FINDINGS = mapOf(
         PermissionCategory.SMS to Finding(Severity.HIGH, R.string.reason_sms),
         PermissionCategory.CALL_LOG to Finding(Severity.HIGH, R.string.reason_call_log),
@@ -61,6 +86,7 @@ object Risk {
         PermissionCategory.LOCATION to Finding(Severity.MEDIUM, R.string.reason_location),
         PermissionCategory.PHONE to Finding(Severity.MEDIUM, R.string.reason_phone),
         PermissionCategory.CALENDAR to Finding(Severity.MEDIUM, R.string.reason_calendar),
+        PermissionCategory.HEALTH to Finding(Severity.MEDIUM, R.string.reason_health),
         PermissionCategory.MEDIA to Finding(Severity.LOW, R.string.reason_media),
         PermissionCategory.SENSORS to Finding(Severity.LOW, R.string.reason_sensors),
         PermissionCategory.NEARBY to Finding(Severity.LOW, R.string.reason_nearby),
@@ -71,6 +97,8 @@ object Risk {
         SpecialAccess.ACCESSIBILITY to Finding(Severity.HIGH, R.string.reason_accessibility),
         SpecialAccess.NOTIFICATION_LISTENER to Finding(Severity.HIGH, R.string.reason_notification_listener),
         SpecialAccess.DEVICE_ADMIN to Finding(Severity.HIGH, R.string.reason_device_admin),
+        SpecialAccess.VPN to Finding(Severity.HIGH, R.string.reason_vpn),
+        SpecialAccess.WRITE_SETTINGS to Finding(Severity.MEDIUM, R.string.reason_write_settings),
         SpecialAccess.OVERLAY to Finding(Severity.MEDIUM, R.string.reason_overlay),
         SpecialAccess.USAGE to Finding(Severity.MEDIUM, R.string.reason_usage),
         SpecialAccess.ALL_FILES to Finding(Severity.MEDIUM, R.string.reason_all_files),
@@ -79,6 +107,7 @@ object Risk {
 
     fun findings(app: AppFacts): List<Finding> {
         val found = mutableListOf<Finding>()
+        if (app.unreadable) found += Finding(Severity.HIGH, R.string.reason_unreadable)
         if (isUtility(app.label) && app.allowed.any { it in UTILITY_SENSITIVE }) {
             found += Finding(Severity.HIGH, R.string.reason_unusual_utility)
         }
@@ -87,6 +116,8 @@ object Risk {
         }
         app.special.mapNotNullTo(found) { SPECIAL_FINDINGS[it] }
         app.allowed.mapNotNullTo(found) { PERMISSION_FINDINGS[it] }
+        if (isRiskyCombination(app, found)) found += Finding(Severity.HIGH, R.string.reason_combination)
+        if (app.unknownSpecial.isNotEmpty()) found += Finding(Severity.MEDIUM, R.string.reason_unknown_access)
         val adjusted = if (app.isSystem) found.map { it.copy(severity = lowerForSystem(it.severity)) } else found
         return adjusted.sortedByDescending { it.severity }
     }
@@ -96,6 +127,11 @@ object Risk {
     fun isUtility(label: String): Boolean {
         val lower = label.lowercase()
         return UTILITY_KEYWORDS.any { it in lower }
+    }
+
+    private fun isRiskyCombination(app: AppFacts, found: List<Finding>): Boolean {
+        if (found.count { it.severity == Severity.MEDIUM } >= COMBINATION_THRESHOLD) return true
+        return app.special.any { it in BROAD_ACCESS } && app.allowed.any { it in PERSONAL_ACCESS }
     }
 
     private fun lowerForSystem(severity: Severity) =

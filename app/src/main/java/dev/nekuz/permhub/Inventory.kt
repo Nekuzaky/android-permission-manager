@@ -4,11 +4,11 @@ import android.content.Context
 
 object Inventory {
     @Volatile
-    var apps: List<AppFacts> = emptyList()
+    var result: ScanResult = ScanResult(emptyList(), emptySet())
 
-    fun refresh(context: Context): List<AppFacts> {
+    fun refresh(context: Context): ScanResult {
         val scanned = Scanner.scan(context.applicationContext)
-        apps = scanned
+        result = scanned
         return scanned
     }
 }

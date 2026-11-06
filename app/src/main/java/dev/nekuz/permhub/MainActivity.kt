@@ -33,9 +33,12 @@ class MainActivity : Activity() {
     private lateinit var list: ListView
     private lateinit var empty: TextView
     private lateinit var progress: ProgressBar
+    private lateinit var notice: TextView
     private lateinit var adapter: RowAdapter
 
     private var apps: List<AppFacts> = emptyList()
+    private var unknownAccess: Set<SpecialAccess> = emptySet()
+    private var outdated = false
     private var tab = Tab.REVIEW
     private var showSystem = false
     private var loaded = false
@@ -60,6 +63,7 @@ class MainActivity : Activity() {
         list = findViewById(R.id.list)
         empty = findViewById(R.id.empty)
         progress = findViewById(R.id.progress)
+        notice = findViewById(R.id.notice)
 
         tab = savedInstanceState?.getString(STATE_TAB)?.let { name ->
             Tab.entries.firstOrNull { it.name == name }
@@ -103,18 +107,21 @@ class MainActivity : Activity() {
         if (!loaded) progress.visibility = View.VISIBLE
         val appContext = applicationContext
         thread {
-            val result = runCatching { Scanner.scan(appContext) }
+            val result = runCatching { Inventory.refresh(appContext) }
             runOnUiThread {
                 if (isDestroyed || current != generation) return@runOnUiThread
                 progress.visibility = View.GONE
                 result.onSuccess {
-                    apps = it
-                    Inventory.apps = it
+                    apps = it.apps
+                    unknownAccess = it.unknownAccess
                     loaded = true
                     failed = false
+                    outdated = false
                 }.onFailure {
                     failed = !loaded
+                    outdated = loaded
                 }
+                Hub.bindNotice(notice, outdated, unknownAccess)
                 renderHero()
                 render()
             }
@@ -193,7 +200,7 @@ class MainActivity : Activity() {
             val findings = Risk.findings(app)
             val top = findings.firstOrNull() ?: return@mapNotNull null
             if (top.severity != Severity.HIGH) return@mapNotNull null
-            Row.AppRow(app, getString(top.reason), top.severity, subtitleIsPackage = false)
+            Row.AppRow(app, "${getString(top.reason)}\n${app.packageName}", top.severity)
         }
 
     private fun appRows(): List<Row> = visibleApps()
@@ -218,7 +225,12 @@ class MainActivity : Activity() {
             .map { access ->
                 val title = getString(access.title)
                 val count = visible.count { access in it.special }
-                Row.CategoryRow(title, getString(R.string.access_count, count), null, access)
+                val subtitle = if (access in unknownAccess) {
+                    getString(R.string.state_unknown)
+                } else {
+                    getString(R.string.access_count, count)
+                }
+                Row.CategoryRow(title, subtitle, null, access)
             }
             .filter { matches(it.title) }
         return buildList {

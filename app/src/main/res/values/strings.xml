@@ -16,7 +16,9 @@
     <string name="tab_apps">Apps</string>
     <string name="search_hint">Search</string>
     <string name="show_system">Show system apps</string>
-    <string name="empty_review">Nothing to review. No app matches a high-risk rule.</string>
+    <string name="empty_review">No app matches a high-risk rule. Open Apps to see sensitive access.</string>
+    <string name="notice_outdated">Could not refresh. These results may be outdated.</string>
+    <string name="notice_unknown">Could not check: %1$s. Results for this access may be incomplete.</string>
     <string name="empty_apps">No apps found.</string>
     <string name="empty_search">No results.</string>
     <string name="empty_access">No app has this access right now.</string>
@@ -30,9 +32,12 @@
     <string name="access_detail_count">%1$d allowed · %2$d requested</string>
     <string name="state_allowed">Allowed</string>
     <string name="state_not_allowed">Not allowed</string>
+    <string name="state_unknown">Could not check</string>
     <string name="app_system">System app</string>
     <string name="no_permissions">This app requests no tracked permission.</string>
-    <string name="no_findings">No rule matched this app.</string>
+    <string name="no_permissions_unreadable">PermHub could not read the permissions of this app.</string>
+    <string name="shared_with">Shares its identity and access with: %1$s</string>
+    <string name="no_findings">No rule matched. PermHub only checks the permissions and access it lists.</string>
     <string name="open_settings">Manage in Android settings</string>
     <string name="open_access_settings">Open Android settings</string>
     <string name="open_appwall">Block Internet with AppWall</string>
@@ -54,12 +59,15 @@
     <string name="permission_calendar">Calendar</string>
     <string name="permission_media">Photos, videos and files</string>
     <string name="permission_sensors">Body sensors and activity</string>
+    <string name="permission_health">Health data</string>
     <string name="permission_nearby">Nearby devices</string>
     <string name="permission_notifications">Notifications</string>
 
     <string name="special_accessibility">Accessibility service</string>
     <string name="special_notification_listener">Notification access</string>
     <string name="special_device_admin">Device admin</string>
+    <string name="special_vpn">VPN</string>
+    <string name="special_write_settings">Modify system settings</string>
     <string name="special_overlay">Display over other apps</string>
     <string name="special_usage">Usage access</string>
     <string name="special_all_files">All files access</string>
@@ -85,8 +93,14 @@
     <string name="reason_sensors">Can read body sensors or physical activity.</string>
     <string name="reason_nearby">Can find and connect to nearby devices.</string>
     <string name="reason_notifications">Can send notifications.</string>
+    <string name="reason_vpn">You approved it as a VPN, so it can see or redirect your network traffic.</string>
+    <string name="reason_write_settings">Can change system settings.</string>
+    <string name="reason_health">Can read or change your health data.</string>
+    <string name="reason_combination">Has several kinds of sensitive access at once, which together can be used to spy on you.</string>
+    <string name="reason_unreadable">PermHub could not fully read this app. An app can cause this on purpose.</string>
+    <string name="reason_unknown_access">PermHub could not check all the special access this app asks for.</string>
     <string name="reason_unusual_utility">Unusual for a simple utility: it has sensitive personal access.</string>
     <string name="reason_unusual_game">Unusual for a game: it has access to personal messages or contacts.</string>
 
-    <string name="info_message">PermHub shows what your apps are allowed to do, in one place. It has no Internet permission and no ads or analytics, so it cannot send your app list anywhere.\n\nAndroid does not let one app change the permissions of another. PermHub opens the right Android settings page, and you make the change there.\n\nFlags come from simple rules. A flag means an app is worth a look, not that it is malicious.\n\nPermHub only sees the current profile. A work profile needs its own copy.</string>
+    <string name="info_message">PermHub shows what your apps are allowed to do, in one place. It has no Internet permission and no ads or analytics, so it cannot send your app list anywhere.\n\nAndroid does not let one app change the permissions of another. PermHub opens the right Android settings page, and you make the change there.\n\nFlags come from simple rules. A flag means an app is worth a look, not that it is malicious. No flag does not mean an app is safe: PermHub only checks the permissions and access it lists.\n\nPermHub only sees the current profile. A work profile needs its own copy.</string>
 </resources>

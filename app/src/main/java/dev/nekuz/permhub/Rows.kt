@@ -16,7 +16,6 @@ sealed class Row {
         val app: AppFacts,
         val subtitle: String,
         val severity: Severity?,
-        val subtitleIsPackage: Boolean = true,
     ) : Row()
 
     data class CategoryRow(
@@ -79,10 +78,8 @@ class RowAdapter(private val context: Context) : BaseAdapter() {
                 Hub.bindIcon(context, icon, row.app.packageName)
                 title.text = row.app.label
                 subtitle.text = row.subtitle
-                if (row.subtitleIsPackage) {
-                    subtitle.maxLines = 1
-                    subtitle.ellipsize = TextUtils.TruncateAt.MIDDLE
-                }
+                subtitle.ellipsize = null
+                subtitle.maxLines = Int.MAX_VALUE
                 Hub.bindSeverity(tag, row.severity)
                 chevron.visibility = View.VISIBLE
             }
